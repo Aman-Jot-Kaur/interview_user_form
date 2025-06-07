@@ -13,9 +13,9 @@ const user_schema = new Schema(
     address: { type: String, required: true },
     date: { type: Date, required: true },
 
-    image1: { type: String, required: true }, // image path or URL
-    image2: { type: String, required: true },
-    video: { type: String, required: true },
+    image1: { type: String}, // image path or URL
+    image2: { type: String},
+    video: { type: String },
 
     deleted_at: { type: Date, default: null }, // soft delete
   },

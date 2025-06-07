@@ -22,12 +22,12 @@ class users_repository extends base_repository {
     const criteria = { uuid: user_id, deleted_at: null };
     const update = { $set: {} };
 
-    if (payload?.role) update.$set.role = payload.role;
-    if (payload?.password) update.$set.password = payload.password;
-    if (payload?.email) update.$set.email = payload.email;
-      if (payload?.image1) update.$set.image1 = payload.image1;
-  if (payload?.image2) update.$set.image2 = payload.image2;
-  if (payload?.video) update.$set.video = payload.video;
+    if (payload?.data?.name) update.$set.name = payload.name;
+    if (payload?.data?.address) update.$set.address = payload.address;
+    if (payload?.data?.age) update.$set.age = payload.age;
+      if (payload?.data?.image1) update.$set.image1 = payload.image1;
+  if (payload?.data?.image2) update.$set.image2 = payload.image2;
+  if (payload?.data?.video) update.$set.video = payload.video;
 
     return await this.update_one(criteria, update, {
       runValidators: true
@@ -40,14 +40,29 @@ class users_repository extends base_repository {
     const update = { $set: { deleted_at: new Date() } };
     return await this.update_one(criteria, update);
   }
+
+// Add this method inside users_repository class
+async get_users_by_date(date) {
+  const start = new Date(date);
+  start.setHours(0, 0, 0, 0);
+
+  const end = new Date(date);
+  end.setHours(23, 59, 59, 999);
+
+  const criteria = {
+    date: { $gte: start, $lte: end },
+    deleted_at: null
+  };
+
+  return await this.find_all(criteria);
 }
+}
+const repo = new users_repository({ model: users_model });
 
 module.exports = {
-  add_user: async (payload) => await new users_repository({ model: users_model }).add_user(payload),
-  get_user_by_uuid: async (id) => await new users_repository({ model: users_model }).get_user_by_uuid(id),
-  update_user: async (id, payload) => await new users_repository({ model: users_model }).update_user(id, payload),
-  delete_user: async (id) => await new users_repository({ model: users_model }).delete_user(id),
-};
-module.exports = {
-  users_repository: new users_repository({ model: users_model }),
+  add_user: repo.add_user.bind(repo),
+  get_user_by_uuid: repo.get_user_by_uuid.bind(repo),
+  update_user: repo.update_user.bind(repo),
+  delete_user: repo.delete_user.bind(repo),
+  get_users_by_date: repo.get_users_by_date.bind(repo), // if needed
 };

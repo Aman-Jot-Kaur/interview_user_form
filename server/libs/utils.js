@@ -10,7 +10,7 @@ const {
   CONFLICT,
   INTERNAL_SERVER_ERROR,
   NO_CONTENT,
-} = require("./constants/server_constants");
+} = require("./constants");
 const mongoose = require("mongoose");
 
 exports.error_handler = (error) => {
