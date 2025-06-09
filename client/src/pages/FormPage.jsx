@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import "./Formpage.css"
+import "./Formpage.css";
+
 export default function FormPage() {
   const [form, setForm] = useState({
     name: "",
@@ -14,8 +15,34 @@ export default function FormPage() {
     image2: null,
   });
   const [loading, setLoading] = useState(false);
-
   const navigate = useNavigate();
+
+  // 🔔 Ask for notification permission on mount
+  useEffect(() => {
+    if ("Notification" in window) {
+      Notification.requestPermission().then((permission) => {
+        console.log("Notification permission:", permission);
+      });
+    }
+  }, []);
+
+  //  Function to show browser notification
+ const showNotification = (name) => {
+  console.log("in show")
+  if ("Notification" in window) {
+    if (Notification.permission === "granted") {
+      new Notification(" User Created", {
+        body: `${name} has been successfully added!`,
+        icon: "https://cdn-icons-png.flaticon.com/512/190/190411.png",
+      });
+    } else {
+      toast.warn(" Notifications are blocked or not granted");
+    }
+  } else {
+    toast.error(" Notifications are not supported in this browser");
+  }
+};
+
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -29,7 +56,6 @@ export default function FormPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Frontend validation for mandatory fields
     const { name, age, address, date } = form;
     if (!name.trim() || !age || !address.trim() || !date) {
       toast.error("Please fill all mandatory fields");
@@ -40,10 +66,10 @@ export default function FormPage() {
 
     try {
       const formData = new FormData();
-      formData.append("name", form.name);
-      formData.append("age", form.age);
-      formData.append("address", form.address);
-      formData.append("date", form.date);
+      formData.append("name", name);
+      formData.append("age", age);
+      formData.append("address", address);
+      formData.append("date", date);
       if (form.video) formData.append("video", form.video);
       if (form.image1) formData.append("image1", form.image1);
       if (form.image2) formData.append("image2", form.image2);
@@ -54,7 +80,8 @@ export default function FormPage() {
 
       toast.success("User created successfully!");
 
-      // Reset form
+      showNotification(name);
+
       setForm({
         name: "",
         age: "",
@@ -65,8 +92,10 @@ export default function FormPage() {
         image2: null,
       });
 
-      // Navigate to display page after success
-      navigate("/display");
+      setTimeout(() => {
+        navigate("/display");
+      }, 1000);
+
     } catch (error) {
       const errMsg =
         error.response?.data?.error ||
@@ -81,14 +110,11 @@ export default function FormPage() {
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      noValidate
-    >
-      <h2 >Add User</h2>
+    <form onSubmit={handleSubmit} noValidate>
+      <h2>Add User</h2>
 
-      <label >
-        Name <span >*</span>
+      <label>
+        Name <span>*</span>
         <input
           name="name"
           type="text"
@@ -99,7 +125,7 @@ export default function FormPage() {
       </label>
 
       <label>
-        Age <span >*</span>
+        Age <span>*</span>
         <input
           name="age"
           type="number"
@@ -110,8 +136,8 @@ export default function FormPage() {
         />
       </label>
 
-      <label >
-        Address <span >*</span>
+      <label>
+        Address <span>*</span>
         <input
           name="address"
           type="text"
@@ -121,8 +147,8 @@ export default function FormPage() {
         />
       </label>
 
-      <label >
-        Date <span >*</span>
+      <label>
+        Date <span>*</span>
         <input
           name="date"
           type="date"
@@ -132,8 +158,8 @@ export default function FormPage() {
         />
       </label>
 
-      <label >
-        Video <span ></span>
+      <label>
+        Video
         <input
           name="video"
           type="file"
@@ -143,20 +169,19 @@ export default function FormPage() {
         />
       </label>
 
-      <label >
-        Image 1 <span ></span>
+      <label>
+        Image 1
         <input
           name="image1"
           type="file"
           accept="image/*"
           onChange={handleChange}
-          className="w-full"
           required
         />
       </label>
 
-      <label >
-        Image 2 <span ></span>
+      <label>
+        Image 2
         <input
           name="image2"
           type="file"
@@ -166,11 +191,7 @@ export default function FormPage() {
         />
       </label>
 
-      <button
-        type="submit"
-        disabled={loading}
-       
-      >
+      <button type="submit" disabled={loading}>
         {loading ? "Submitting..." : "Submit"}
       </button>
     </form>
