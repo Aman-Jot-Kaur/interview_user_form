@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-
+import "./Formpage.css"
 export default function FormPage() {
   const [form, setForm] = useState({
     name: "",
@@ -32,7 +32,7 @@ export default function FormPage() {
     // Frontend validation for mandatory fields
     const { name, age, address, date } = form;
     if (!name.trim() || !age || !address.trim() || !date) {
-      toast.error("Please fill all mandatory fields: Name, Age, Address, Date");
+      toast.error("Please fill all mandatory fields");
       return;
     }
 
@@ -83,72 +83,68 @@ export default function FormPage() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="max-w-lg mx-auto bg-white p-6 rounded shadow"
       noValidate
     >
-      <h2 className="text-xl font-bold mb-4">Add User</h2>
+      <h2 >Add User</h2>
 
-      <label className="block mb-2">
-        Name <span className="text-red-600">*</span>
+      <label >
+        Name <span >*</span>
         <input
           name="name"
+          type="text"
           value={form.name}
           onChange={handleChange}
-          className="w-full border p-2 rounded"
           required
         />
       </label>
 
-      <label className="block mb-2">
-        Age <span className="text-red-600">*</span>
+      <label>
+        Age <span >*</span>
         <input
           name="age"
           type="number"
           value={form.age}
           onChange={handleChange}
-          className="w-full border p-2 rounded"
           min={1}
           required
         />
       </label>
 
-      <label className="block mb-2">
-        Address <span className="text-red-600">*</span>
+      <label >
+        Address <span >*</span>
         <input
           name="address"
+          type="text"
           value={form.address}
           onChange={handleChange}
-          className="w-full border p-2 rounded"
           required
         />
       </label>
 
-      <label className="block mb-2">
-        Date <span className="text-red-600">*</span>
+      <label >
+        Date <span >*</span>
         <input
           name="date"
           type="date"
           value={form.date}
           onChange={handleChange}
-          className="w-full border p-2 rounded"
           required
         />
       </label>
 
-      <label className="block mb-2">
-        Video <span className="text-red-600">*</span>
+      <label >
+        Video <span ></span>
         <input
           name="video"
           type="file"
           accept="video/*"
           onChange={handleChange}
-          className="w-full"
           required
         />
       </label>
 
-      <label className="block mb-2">
-        Image 1 <span className="text-red-600">*</span>
+      <label >
+        Image 1 <span ></span>
         <input
           name="image1"
           type="file"
@@ -159,14 +155,13 @@ export default function FormPage() {
         />
       </label>
 
-      <label className="block mb-4">
-        Image 2 <span className="text-red-600">*</span>
+      <label >
+        Image 2 <span ></span>
         <input
           name="image2"
           type="file"
           accept="image/*"
           onChange={handleChange}
-          className="w-full"
           required
         />
       </label>
@@ -174,7 +169,7 @@ export default function FormPage() {
       <button
         type="submit"
         disabled={loading}
-        className="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 disabled:opacity-50"
+       
       >
         {loading ? "Submitting..." : "Submit"}
       </button>

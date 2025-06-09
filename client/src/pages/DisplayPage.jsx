@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import "./displayPage.css";
@@ -14,14 +14,14 @@ export default function DisplayPage() {
     return `${month}-${day}-${year}`;
   };
 
-  const fetchUsersByDate = async () => {
-    if (!date) {
+  const fetchUsersByDate = async (customDate = date) => {
+    if (!customDate) {
       toast.warn("Please select a date");
       return;
     }
     setLoading(true);
     try {
-      const formattedDate = formatDateToMMDDYYYY(date);
+      const formattedDate = formatDateToMMDDYYYY(customDate);
       const res = await axios.get(`http://localhost:8001/date/${formattedDate}`);
       setUsers(res.data);
       if (res.data.length === 0) toast.info("No users found for this date");
@@ -38,6 +38,13 @@ export default function DisplayPage() {
     }
   };
 
+  // On page load, set today's date and fetch users
+  useEffect(() => {
+    const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
+    setDate(today);
+    fetchUsersByDate(today);
+  }, []);
+
   return (
     <div className="container">
       <h2>Display Users by Date</h2>
@@ -46,12 +53,15 @@ export default function DisplayPage() {
         <input
           type="date"
           value={date}
-          onChange={(e) => setDate(e.target.value)}
+          onChange={(e) => {
+            setDate(e.target.value);
+            fetchUsersByDate(e.target.value);
+          }}
           aria-label="Select date"
         />
-        <button onClick={fetchUsersByDate} disabled={loading}>
+        {/* <button onClick={() => fetchUsersByDate(date)} disabled={loading}>
           {loading ? "Loading..." : "Search"}
-        </button>
+        </button> */}
       </div>
 
       {/* Desktop Table */}

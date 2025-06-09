@@ -50,7 +50,7 @@ async get_users_by_date(date) {
   end.setHours(23, 59, 59, 999);
 
   const criteria = {
-    date: { $gte: start, $lte: end },
+    created_at: { $gte: start, $lte: end },
     deleted_at: null
   };
 
